@@ -1,11 +1,5 @@
-/*global define:true*/
-/*global describe:true */
-/*global it:true */
-/*global expect:true */
-/*global beforeEach:true */
-/*global sinon:true */
-/*global spyOn:true */
-/*global expect:true */
+/*global define:true, describe:true , it:true , expect:true, 
+beforeEach:true, sinon:true, spyOn:true , expect:true */
 /* jshint strict: false */
 define(['gmodule', 'jquery'], function(Gmodule, $) {
     var Animal, Dog;
