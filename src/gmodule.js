@@ -17,7 +17,6 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
 
 
     var Module = function(name, parent){
-console.log('Hola');
         // if(_namespace[name])
             // return name;
 
