@@ -23,7 +23,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         yeoman: yeomanConfig,
         livereload:{
-            port: 35723
+            port: 45723
         },
         watch: {
             livereload: {
@@ -38,7 +38,7 @@ module.exports = function (grunt) {
         },
         connect: {
             options: {
-                port: 9300,
+                port: 9390,
                 // Change this to '0.0.0.0' to access the server from outside.
                 hostname: 'localhost'
             },
@@ -48,6 +48,8 @@ module.exports = function (grunt) {
                         return [
                             lrSnippet,
                             mountFolder(connect, '.tmp'),
+                            mountFolder(connect, 'libs'),
+                            mountFolder(connect, 'examples'),
                             mountFolder(connect, yeomanConfig.src)
                         ];
                     }
