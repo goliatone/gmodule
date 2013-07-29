@@ -11,12 +11,13 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
 
 	//TODO: How do we get a reference to the global object here?
 	var _namespace = this; //module.config().namespace || this;
+	var _exportName = 'Module'; //module.config().exportName || 'Module';
 
 	var _splice = Array.prototype.splice;
 
 
     var Module = function(name, parent){
-
+console.log('Hola');
         // if(_namespace[name])
             // return name;
 
@@ -223,8 +224,8 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
      */
     Module.namespace = function(ns){
         var namespace = ns || _namespace;
-        if(!namespace.hasOwnProperty(exportName))
-            namespace[exportName] = Module;
+        if(!namespace.hasOwnProperty(_exportName))
+            namespace[_exportName] = Module;
         return namespace;
     };
 
