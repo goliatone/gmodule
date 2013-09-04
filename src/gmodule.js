@@ -15,6 +15,17 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
 
 	var _splice = Array.prototype.splice;
 
+    var _isArray = function(obj){
+        return obj.toString() === '[object Array]';
+    };
+
+    var _merge = function(a, b){
+        for(var p in b){
+            if(b.hasOwnProperty(p))
+                a[p] = b[p];
+        }
+        return a;
+    };
 
     var Module = function(name, parent){
         // if(_namespace[name])
@@ -79,7 +90,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             var args;
             if(arguments.length > 2 ){
                 target = obj;
-                args = Array.prototype.splice.call(arguments,0);
+                args = _splice.call(arguments,0);
             } else {
                 args = [obj];
             }
@@ -187,10 +198,10 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
     };
 
 
-    Module.override = function(obj, method, fn){
-        obj.parent = obj.parent || {};
-        obj.parent[method] = obj[method];
-        obj[method] = fn;
+    Module.override = function(src, method, fn){
+        src.parent = src.parent || {};
+        src.parent[method] = src[method];
+        src[method] = fn;
     };
 
     /**
@@ -200,13 +211,14 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
      * @param   object  Object to be cloned.
      * @return  object  Cloned object.
      */
-    Module.clone = function(obj){
-        if (typeof obj === 'function') return obj;
-        if (typeof obj !== 'object') return obj;
-        if (jQuery.isArray(obj)) return jQuery.extend([], obj);
-        return jQuery.extend({}, obj);
+    Module.clone = function(src){
+        if (typeof src === 'function') return src;
+        if (typeof src !== 'object') return src;
+        var out = _isArray(src) ? [] : {};
+        return _merge(out, src);
     };
 
+    
 
     /*Module.merge = function(){
         console.log(_splice.call(arguments,0))
