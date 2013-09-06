@@ -5,15 +5,39 @@
  * Copyright (c) 2013 goliatone
  * Licensed under the MIT license.
  */
-/*global define:true*/
-/* jshint strict: false */
-define('gmodule', ['module', 'jquery'], function(module, jQuery) {
+/* jshint strict: false, plusplus: true */
+/*global define: false, require: false, module: false, exports: false */
+(function (root, name, deps, factory) {
+    "use strict";
+    if (typeof exports === 'object') {
+        // Node
+         if(typeof deps === 'function') { 
+            factory = deps;
+            deps = [];
+        }
+        module.exports = factory.apply(root, deps.map(require));
+    } else if (typeof define === 'function' && 'amd' in define) {
+        //require js
+        define(name, deps, factory);
+    } else {
+        // Browser
+        var d, i = 0, global = root, old = global[name], mod;
+        while((d = deps[i]) !== undefined) deps[i++] = root[d];
+        global[name] = mod = factory.apply(global, deps);
+        //Export no 'conflict module', aliases the module.
+        mod.noConflict = function(){
+            global[name] = old;
+            return mod;
+        };
+    }
+    //TODO: Get rid of jquery!
+}(this, "gmodule", function() {
 
-	//TODO: How do we get a reference to the global object here?
-	var _namespace = this; //module.config().namespace || this;
-	var _exportName = 'Module'; //module.config().exportName || 'Module';
+    //TODO: How do we get a reference to the global object here?
+    var _namespace = this; //module.config().namespace || this;
+    var _exportName = 'Module'; //module.config().exportName || 'Module';
 
-	var _splice = Array.prototype.splice;
+    var _splice = Array.prototype.splice;
 
     var _isArray = function(obj){
         return obj.toString() === '[object Array]';
@@ -142,7 +166,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         };
 
         /**
-         * Utility mehtod to proxy function calls
+         * Utility method to proxy function calls
          * with the proper scope.
          * Any extra parameters passed to it, will be
          * concatenated into the final call.
@@ -197,7 +221,14 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         return new Decorator(self);
     };
 
-
+    /**
+     * Override a method but store a reference to 
+     * it on the source object's parent.
+     * @param  {Function}   src
+     * @param  {Function}   method
+     * @param  {Function} fn
+     * @return {void}
+     */
     Module.override = function(src, method, fn){
         src.parent = src.parent || {};
         src.parent[method] = src[method];
@@ -247,4 +278,4 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
     };
 
     return Module;
-});
+}));
