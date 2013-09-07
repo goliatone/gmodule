@@ -144,7 +144,6 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
                 method:function(){}
             };
             var C = g.Module('C').extend(staticMembers);
-            var ci = new C();
             expect(called).toBeTruthy();
         });
 
@@ -212,6 +211,34 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
 
         });
 
-    });
+        it('supports prototype syntax',function(){
+            Cat = g.Module('Cat','Animal');
 
+            Cat.prototype.init = function(name){
+                this.name = name;
+
+                if('init' in this._super)
+                    this._super.init(arguments);
+            };
+
+            Cat.prototype.miaou = function(){
+                return this.name;
+            };
+
+            Cat.prototype.getName = function(){
+                return this.name;
+            };
+
+            Cat.prototype.callSuper = function(){
+                return this._super.makeNoise();
+            };
+
+            var constructor = sinon.spy(Cat.prototype, 'init');
+
+            var michina = new Cat('michina');
+
+            expect(constructor).toHaveBeenCalled();
+            expect(michina).toHaveMethods(['init', 'miaou', 'getName', 'callSuper']);
+        });
+    });
 });
