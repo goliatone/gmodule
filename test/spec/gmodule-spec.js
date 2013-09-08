@@ -156,8 +156,19 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
                 method:function(){}
             };
             var C = g.Module('C').extend(staticMembers);
-            var ci = new C();
             expect(scoped).toBe('C');
+        });
+
+        it('this on extended method refers to the constructor',function(){
+            var staticMembers = {
+                extended:function(self){
+                    this.NAME = this.__name__;
+                },
+                method:function(){}
+            };
+            var C = g.Module('C').extend(staticMembers);            
+            expect(C.NAME).toBe('C');
+            expect(C).toHaveProperties('NAME');
         });
 
         it('should fire included callback after include',function(){
@@ -175,15 +186,18 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
 
         it('should fire included with the right scope',function(){
             var scoped = false;
+            var instance = false;
             var instanceMembers = {
                 included:function(self){
                     scoped = this.ctor.__name__;
+                    instance = this;
                 },
                 method:function(){}
             };
             var C = g.Module('C').include(instanceMembers);
             var ci = new C();
             expect(scoped).toBe('C');
+            expect(ci).toMatchObject(instance);
         });
 
 
