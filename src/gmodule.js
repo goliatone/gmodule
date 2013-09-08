@@ -202,9 +202,9 @@
     };
 
     Module.__name__    = 'Module';
-    //REVIEW: Should we have a per module or use jii.VERSION?
-    Module.__version__ = '0.0.1';
+    Module.__version__ = '0.1.3';
 
+    //TODO: Remove?!
     Module.decorator = function(implementation){
         var self = this;
         var Decorator = function(){};
@@ -273,7 +273,6 @@
 
 
     Module.prototype.init = function(){
-        console.log('Module: Init!');
         return 'This is just a stub!';
     };
 
