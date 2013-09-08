@@ -1,7 +1,7 @@
 /*global define:true, describe:true , it:true , expect:true, 
 beforeEach:true, sinon:true, spyOn:true , expect:true */
 /* jshint strict: false */
-define(['gmodule', 'jquery'], function(Gmodule, $) {
+define(['gmodule'], function(Gmodule) {
     var Animal, Dog;
 
     var g = {};
@@ -31,7 +31,7 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
                         this._super.init(arguments);
                 },
                 bark:function(){
-                    return this.name;
+                    return 'buf, buf';
                 },
                 getName:function(){
                     return this.name;
@@ -43,7 +43,7 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
             spyOn(Animal, 'animalType');
         });
 
-        it('Gmodule shold be loaded', function() {
+        it('Gmodule should be loaded', function() {
             expect(Gmodule).toBeTruthy();
         });
 
@@ -64,10 +64,15 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
             expect(Animal).toHaveProperties('__name__');
         });
 
-        it('classes have a magic name propertie',function(){
+        it('classes have a magic name property',function(){
             var k9 = new Animal();
-            expect(Animal.__name__ === 'Animal').toBeTruthy();
-            expect(Animal.__name__ === k9.__name__).toBeTruthy();
+            expect(Animal.__name__).toBe('Animal');
+            expect(Animal.__name__).toBe(k9.__name__);
+        });
+
+        it('instances get a toString method that shows their class name',function(){
+            var k9 = new Animal();
+            expect(k9.toString()).toBe('[object Animal]');
         });
 
         it('can create subclasses', function(){
@@ -79,8 +84,8 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
         it('subclasses respect instanceof',function(){
             // var dog = new Dog();
             var A = g.Module('A');
-            var B = g.Module('B',A);
-            var C = g.Module('C',B);
+            var B = g.Module('B', A);
+            var C = g.Module('C', B);
             var ci = new C();
             expect(ci instanceof A).toBeTruthy();
             expect(ci instanceof B).toBeTruthy();
@@ -162,6 +167,8 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
         it('this on extended method refers to the constructor',function(){
             var staticMembers = {
                 extended:function(self){
+                    //NOTE: This is rather ugly, since here `this` refers to the
+                    //module instead of the instance, which is counterintuitive. 
                     this.NAME = this.__name__;
                 },
                 method:function(){}
@@ -230,7 +237,6 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
 
             Cat.prototype.init = function(name){
                 this.name = name;
-
                 if('init' in this._super)
                     this._super.init(arguments);
             };
@@ -254,5 +260,46 @@ define(['gmodule', 'jquery'], function(Gmodule, $) {
             expect(constructor).toHaveBeenCalled();
             expect(michina).toHaveMethods(['init', 'miaou', 'getName', 'callSuper']);
         });
+
+        it('can override methods, and have access to the super method',function(){
+            Milu = g.Module('Milu','Dog');
+            
+            var milu = new Milu('Milu');
+
+            expect(milu.bark()).toBe('buf, buf');
+
+            var overrideBark = function(){
+                return this.__name__+" says: "+this._super.bark();
+            };
+
+            Milu.override('bark', overrideBark);
+
+            expect(milu.bark()).toBe('Milu says: buf, buf');
+        });
+
+        it('can override methods on objects, and have access to the super method',function(){
+            
+            var Class = function(){};
+            var overrideToString = function(){
+                return "We monkeypached something: "+this._super.toString();
+            };
+
+            g.Module.override('toString', overrideToString, Class.prototype);
+            
+            var a = new Class();
+            expect(a.toString()).toBe('We monkeypached something: [object Object]');
+        });
+        // it('can override methods on generic objects, and have access to the super method',function(){
+            
+        //     // var Class = function(){};
+        //     var overrideToString = function(){
+        //         return "We monkeypached something: "+this._super.toString();
+        //     };
+
+        //     g.Module.override('toString', overrideToString, Array.prototype);
+            
+        //     var a = [];
+        //     expect(a.toString()).toBe('We monkeypached something: [object Object]');
+        // });
     });
 });
