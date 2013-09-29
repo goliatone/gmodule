@@ -222,7 +222,7 @@
     };
 
     Module.__name__    = 'Module';
-    Module.__version__ = '0.1.3';
+    Module.__version__ = '0.2.1';
 
     //TODO: Remove?!
     Module.decorator = function(implementation){
