@@ -164,7 +164,7 @@ define(['gmodule'], function(Gmodule) {
             expect(scoped).toBe('C');
         });
 
-        it('this on extended method refers to the constructor',function(){
+        it('this on "extended" method refers to the constructor',function(){
             var staticMembers = {
                 extended:function(self){
                     //NOTE: This is rather ugly, since here `this` refers to the
@@ -176,6 +176,18 @@ define(['gmodule'], function(Gmodule) {
             var C = g.Module('C').extend(staticMembers);            
             expect(C.NAME).toBe('C');
             expect(C).toHaveProperties('NAME');
+        });
+
+        it('the "extending" method allows to DRY extended',function(){
+            var A = g.Module('A');
+            A.extending = function(s){
+                var SELF = this;
+                SELF.ID = SELF.__name__ + '::ID';
+            };
+            var B = g.Module('B', A);
+            var C = g.Module('C', A);
+            expect(B.ID).toBe('B::ID');
+            expect(C.ID).toBe('C::ID');            
         });
 
         it('should fire included callback after include',function(){
