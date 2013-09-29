@@ -198,7 +198,7 @@
 
         //shortcuts.
         self.fn = self.prototype;
-        self.fn.parent = parent;
+        self.fn.parent = parent; //TODO: We most likely do not need this, since we have now _super.
         self.fn.proxy  = self.proxy;
 
 
@@ -208,6 +208,15 @@
 
         //Store a reference by name in the provided namespace.
         _namespace[name] = self;
+
+        /**
+         * Hook to execute "extending" method on parent
+         * after we create module. This allows for DRY
+         * "extending" implementations.
+         * @see  'the "extending" method allows to DRY extended' in
+         *       specs.
+         */
+        if('extending' in self) self.extending(); 
 
         return self;
     };
