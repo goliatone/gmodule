@@ -8,13 +8,14 @@
 /* jshint strict: false, plusplus: true */
 /*global define: false, require: false, module: false, exports: false */
 (function (root, name, deps, factory) {
-    "use strict";
+    'use strict';
+    if (typeof deps === 'function') {
+        factory = deps;
+        deps = [];
+    }
+
     if (typeof exports === 'object') {
-        // Node
-         if(typeof deps === 'function') { 
-            factory = deps;
-            deps = [];
-        }
+        // Node        
         module.exports = factory.apply(root, deps.map(require));
     } else if (typeof define === 'function' && 'amd' in define) {
         //require js
@@ -31,7 +32,7 @@
         };
     }
     //TODO: Get rid of jquery!
-}(this, "gmodule", function() {
+}(this, 'gmodule', function() {
 
     //TODO: How do we get a reference to the global object here?
     var _namespace = this; //module.config().namespace || this;
@@ -104,7 +105,7 @@
 
             //Override toString method to display class name.
             self.prototype.toString = function(){
-                return "[object "+this.__name__+"]"
+                return '[object '+this.__name__+']';
             };
         }
 
@@ -142,7 +143,7 @@
             };
 
             var i = 0, t = args.length;
-            for(;i<t;i++){
+            for ( ; i<t; i++){
                 _extend(args[i]);
             }
 
@@ -169,7 +170,7 @@
             };
 
             var i = 0, t = arguments.length;
-            for(;i<t;i++){
+            for( ; i<t; i++){
                 _include(arguments[i]);
             }
 
@@ -216,7 +217,7 @@
          * @see  'the "extending" method allows to DRY extended' in
          *       specs.
          */
-        if('extending' in self) self.extending(); 
+        if('extending' in self) self.extending();
 
         return self;
     };
@@ -258,7 +259,7 @@
         if(!('_super' in src)){
             src._super = {};
             src._super[method] = src[method];
-        }            
+        }
         src[method] = fn;
     };
 
@@ -276,7 +277,6 @@
         return _merge(out, src);
     };
 
-    
 
     /*Module.merge = function(){
         console.log(_splice.call(arguments,0))
