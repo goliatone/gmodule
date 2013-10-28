@@ -20,6 +20,7 @@
   "trailing": true,
   "smarttabs": true,
   "lastsemic":true,
+  "plusplus":false,
   "sub": true,
   "devel":true,
   "boss": true,
