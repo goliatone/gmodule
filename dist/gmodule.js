@@ -5,16 +5,52 @@
  * Copyright (c) 2013 goliatone
  * Licensed under the MIT license.
  */
-/*global define:true*/
-/* jshint strict: false */
-define('gmodule', ['module', 'jquery'], function(module, jQuery) {
+/* jshint strict: false, plusplus: true */
+/*global define: false, require: false, module: false, exports: false */
+(function (root, name, deps, factory) {
+    'use strict';
+    if (typeof deps === 'function') {
+        factory = deps;
+        deps = [];
+    }
 
-	//TODO: How do we get a reference to the global object here?
-	var _namespace = this; //module.config().namespace || this;
-	var _exportName = 'Module'; //module.config().exportName || 'Module';
+    if (typeof exports === 'object') {
+        // Node        
+        module.exports = factory.apply(root, deps.map(require));
+    } else if (typeof define === 'function' && 'amd' in define) {
+        //require js
+        define(name, deps, factory);
+    } else {
+        // Browser
+        var d, i = 0, global = root, old = global[name], mod;
+        while((d = deps[i]) !== undefined) deps[i++] = root[d];
+        global[name] = mod = factory.apply(global, deps);
+        //Export no 'conflict module', aliases the module.
+        mod.noConflict = function(){
+            global[name] = old;
+            return mod;
+        };
+    }
+    //TODO: Get rid of jquery!
+}(this, 'gmodule', function() {
 
-	var _splice = Array.prototype.splice;
+    //TODO: How do we get a reference to the global object here?
+    var _namespace = this; //module.config().namespace || this;
+    var _exportName = 'Module'; //module.config().exportName || 'Module';
 
+    var _splice = Array.prototype.splice;
+
+    var _isArray = function(obj){
+        return obj.toString() === '[object Array]';
+    };
+
+    var _merge = function(a, b){
+        for(var p in b){
+            if(b.hasOwnProperty(p))
+                a[p] = b[p];
+        }
+        return a;
+    };
 
     var Module = function(name, parent){
         // if(_namespace[name])
@@ -34,10 +70,9 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             if( 'init' in this) this.init.apply(this, arguments);
         };
 
-        //define default constructor. TODO:we could rename it.
-        self.prototype.init = function(){};
-
         //Change self proto.
+        //TODO: We could/should remove this conditional.
+        //parent will always be at least Module.
         if(parent){
             for( var i in parent){
                 if(parent.hasOwnProperty(i)){
@@ -60,6 +95,18 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             //We need to create super after proto.
             //self._super = parent;
             self.prototype._super = parent.prototype;
+
+            ///////////////////////////////////////
+            //TODO: Should we move this out of the constructor?!
+            ///////////////////////////////////////
+            //Add default constructor stub method.
+            //TODO: Rename?
+            self.prototype.init = function(){};
+
+            //Override toString method to display class name.
+            self.prototype.toString = function(){
+                return '[object '+this.__name__+']';
+            };
         }
 
 
@@ -79,7 +126,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             var args;
             if(arguments.length > 2 ){
                 target = obj;
-                args = Array.prototype.splice.call(arguments,0);
+                args = _splice.call(arguments,0);
             } else {
                 args = [obj];
             }
@@ -96,7 +143,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             };
 
             var i = 0, t = args.length;
-            for(;i<t;i++){
+            for ( ; i<t; i++){
                 _extend(args[i]);
             }
 
@@ -123,7 +170,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
             };
 
             var i = 0, t = arguments.length;
-            for(;i<t;i++){
+            for( ; i<t; i++){
                 _include(arguments[i]);
             }
 
@@ -131,7 +178,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         };
 
         /**
-         * Utility mehtod to proxy function calls
+         * Utility method to proxy function calls
          * with the proper scope.
          * Any extra parameters passed to it, will be
          * concatenated into the final call.
@@ -152,7 +199,7 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
 
         //shortcuts.
         self.fn = self.prototype;
-        self.fn.parent = parent;
+        self.fn.parent = parent; //TODO: We most likely do not need this, since we have now _super.
         self.fn.proxy  = self.proxy;
 
 
@@ -163,13 +210,22 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         //Store a reference by name in the provided namespace.
         _namespace[name] = self;
 
+        /**
+         * Hook to execute "extending" method on parent
+         * after we create module. This allows for DRY
+         * "extending" implementations.
+         * @see  'the "extending" method allows to DRY extended' in
+         *       specs.
+         */
+        if('extending' in self) self.extending();
+
         return self;
     };
 
     Module.__name__    = 'Module';
-    //REVIEW: Should we have a per module or use jii.VERSION?
-    Module.__version__ = '0.0.1';
+    Module.__version__ = '0.2.1';
 
+    //TODO: Remove?!
     Module.decorator = function(implementation){
         var self = this;
         var Decorator = function(){};
@@ -186,11 +242,25 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         return new Decorator(self);
     };
 
-
-    Module.override = function(obj, method, fn){
-        obj.parent = obj.parent || {};
-        obj.parent[method] = obj[method];
-        obj[method] = fn;
+    /**
+     * Override a method, by default the source object 
+     * is the current modules prototype.
+     * If the source object is not a Module, we create a _super 
+     * object and attach the original method.
+     * 
+     * 
+     * @param  {Function}   src
+     * @param  {Function}   method
+     * @param  {Function} fn
+     * @return {void}
+     */
+    Module.override = function(method, fn, src){
+        src = src || this.prototype;
+        if(!('_super' in src)){
+            src._super = {};
+            src._super[method] = src[method];
+        }
+        src[method] = fn;
     };
 
     /**
@@ -200,11 +270,11 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
      * @param   object  Object to be cloned.
      * @return  object  Cloned object.
      */
-    Module.clone = function(obj){
-        if (typeof obj === 'function') return obj;
-        if (typeof obj !== 'object') return obj;
-        if (jQuery.isArray(obj)) return jQuery.extend([], obj);
-        return jQuery.extend({}, obj);
+    Module.clone = function(src){
+        if (typeof src === 'function') return src;
+        if (typeof src !== 'object') return src;
+        var out = _isArray(src) ? [] : {};
+        return _merge(out, src);
     };
 
 
@@ -228,11 +298,11 @@ define('gmodule', ['module', 'jquery'], function(module, jQuery) {
         return namespace;
     };
 
-
+/*
     Module.prototype.init = function(){
-        console.log('Module: Init!');
+        console.log('Peperone');
         return 'This is just a stub!';
-    };
+    };*/
 
     return Module;
-});
+}));
