@@ -99,8 +99,7 @@ module.exports = function (grunt) {
         karma: {
             options: {
                 configFile: 'karma.conf.js',
-                runnerPort: 9339,
-                browsers: ['Chrome', 'Firefox']
+                runnerPort: 9331,
             },
             unit: {
                 reporters: 'dots'
