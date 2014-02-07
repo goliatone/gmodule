@@ -59,10 +59,10 @@ module.exports = function(config) {
         },
 
         // web server port
-        port: 9876,
+        port: 9871,
 
         // cli runner port
-        runnerPort: 9100,
+        runnerPort: 9130,
 
         // enable / disable colors in the output (reporters and logs)
         colors: true,
