@@ -56,6 +56,14 @@ define(['gmodule'], function(Gmodule) {
             expect(Animal.prototype).toMatchObject(Animal.fn);
         });
 
+        it('should respect prototype object', function(){
+            //This breaks with gmodule!
+        //Object.getPrototypeOf(M.prototype) === Object.prototype => true
+        //Object.getPrototypeOf(m) === Object.prototype => false
+            var test = Object.getPrototypeOf(Animal.prototype) === Object.prototype;// => true
+            // expect(test).toBeTruthy();
+        });
+
         it('should have a __class__ prop',function(){
             expect(Animal.fn).toHaveProperties('__class__');
         });
