@@ -8,14 +8,13 @@
 /* jshint strict: false, plusplus: true */
 /*global define: false, require: false, module: false, exports: false */
 (function (root, name, deps, factory) {
-    'use strict';
-    if (typeof deps === 'function') {
-        factory = deps;
-        deps = [];
-    }
-
+    "use strict";
     if (typeof exports === 'object') {
-        // Node        
+        // Node
+         if(typeof deps === 'function') { 
+            factory = deps;
+            deps = [];
+        }
         module.exports = factory.apply(root, deps.map(require));
     } else if (typeof define === 'function' && 'amd' in define) {
         //require js
@@ -32,7 +31,7 @@
         };
     }
     //TODO: Get rid of jquery!
-}(this, 'gmodule', function() {
+}(this, "gmodule", function() {
 
     //TODO: How do we get a reference to the global object here?
     var _namespace = this; //module.config().namespace || this;
@@ -67,6 +66,7 @@
         }
 
         var self = function(){
+            this._super.constructor.apply(this, arguments);
             if( 'init' in this) this.init.apply(this, arguments);
         };
 
@@ -101,11 +101,12 @@
             ///////////////////////////////////////
             //Add default constructor stub method.
             //TODO: Rename?
-            self.prototype.init = function(){};
+            if(!'init' in self.prototype)
+                self.prototype.init = function(){};
 
             //Override toString method to display class name.
             self.prototype.toString = function(){
-                return '[object '+this.__name__+']';
+                return "[object "+this.__name__+"]"
             };
         }
 
@@ -143,7 +144,7 @@
             };
 
             var i = 0, t = args.length;
-            for ( ; i<t; i++){
+            for(;i<t;i++){
                 _extend(args[i]);
             }
 
@@ -165,12 +166,13 @@
                 for(var i in obj){
                     if(obj.hasOwnProperty(i))
                         self.fn[i] = obj[i];
+                    else console.log('we dont have own property',i);
                 }
                 if(included) included.call(self.fn, self.fn);
             };
 
             var i = 0, t = arguments.length;
-            for( ; i<t; i++){
+            for(;i<t;i++){
                 _include(arguments[i]);
             }
 
@@ -217,13 +219,13 @@
          * @see  'the "extending" method allows to DRY extended' in
          *       specs.
          */
-        if('extending' in self) self.extending();
+        if('extending' in self) self.extending(); 
 
         return self;
     };
 
     Module.__name__    = 'Module';
-    Module.__version__ = '0.2.1';
+    Module.__version__ = '0.2.2';
 
     //TODO: Remove?!
     Module.decorator = function(implementation){
@@ -259,7 +261,7 @@
         if(!('_super' in src)){
             src._super = {};
             src._super[method] = src[method];
-        }
+        }            
         src[method] = fn;
     };
 
@@ -277,6 +279,7 @@
         return _merge(out, src);
     };
 
+    
 
     /*Module.merge = function(){
         console.log(_splice.call(arguments,0))
