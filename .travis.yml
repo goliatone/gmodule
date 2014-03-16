@@ -3,5 +3,5 @@ node_js:
   - 0.8
 before_script:
   - bower install
-  - 'npm install -g grunt-cli'
-  - 'npm install -g karma-jasmine'
+  - npm install -g grunt-cli
+  - npm install -g karma-jasmine
