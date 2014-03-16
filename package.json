@@ -7,11 +7,11 @@
   "scripts": {
     "test": "grunt karma:ci"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/goliatone/gmodule.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goliatone/gmodule.git"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "grunt-cli": "~0.1"
   },
   "devDependencies": {
@@ -26,10 +26,18 @@
     "grunt-contrib-livereload": "~0.1.2",
     "grunt-bower-requirejs": "~0.4.1",
     "grunt-regarde": "~0.1.1",
+    "karma": "~0.10.4",
     "grunt-karma": "~0.7.1",
     "karma-coverage": "~0.1",
     "grunt-open": "~0.2.0",
     "matchdep": "~0.1.1",
-    "grunt-bump": "0.0.11"
+    "grunt-bump": "0.0.11",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-jasmine": "^0.2.2",
+    "requirejs": "^2.1.11",
+    "karma-requirejs": "^0.2.1",
+    "karma-phantomjs-launcher": "^0.1.2",
+    "karma-chrome-launcher": "^0.1.2",
+    "karma-firefox-launcher": "^0.1.3"
   }
 }
