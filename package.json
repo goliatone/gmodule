@@ -7,9 +7,12 @@
   "scripts": {
     "test": "grunt karma:ci"
   },
-  "repository" : { 
+  "repository" : {
     "type" : "git",
     "url" : "https://github.com/goliatone/gmodule.git"
+  },
+  "peerDependencies":{
+    "grunt-cli": "~0.1"
   },
   "devDependencies": {
     "grunt": "~0.4",
