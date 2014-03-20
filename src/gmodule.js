@@ -11,7 +11,7 @@
     "use strict";
     if (typeof exports === 'object') {
         // Node
-         if(typeof deps === 'function') { 
+         if(typeof deps === 'function') {
             factory = deps;
             deps = [];
         }
@@ -66,7 +66,7 @@
         }
 
         var self = function(){
-            this._super.constructor.apply(this, arguments);
+            if(this._super.constructor !== self) this._super.constructor.apply(this, arguments);
             if( 'init' in this) this.init.apply(this, arguments);
         };
 
@@ -219,7 +219,7 @@
          * @see  'the "extending" method allows to DRY extended' in
          *       specs.
          */
-        if('extending' in self) self.extending(); 
+        if('extending' in self) self.extending();
 
         return self;
     };
@@ -245,12 +245,12 @@
     };
 
     /**
-     * Override a method, by default the source object 
+     * Override a method, by default the source object
      * is the current modules prototype.
-     * If the source object is not a Module, we create a _super 
+     * If the source object is not a Module, we create a _super
      * object and attach the original method.
-     * 
-     * 
+     *
+     *
      * @param  {Function}   src
      * @param  {Function}   method
      * @param  {Function} fn
@@ -261,7 +261,7 @@
         if(!('_super' in src)){
             src._super = {};
             src._super[method] = src[method];
-        }            
+        }
         src[method] = fn;
     };
 
@@ -279,7 +279,7 @@
         return _merge(out, src);
     };
 
-    
+
 
     /*Module.merge = function(){
         console.log(_splice.call(arguments,0))
